@@ -1,16 +1,8 @@
 # dallify
 
-A new Flutter project.
+![1](https://github.com/AmirHosseinAsa/dallify/assets/92585902/6d05921e-e985-4ffe-b47c-912918a488ac)
+
 
 ## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Download and replace in python folder
+https://www.python.org/ftp/python/3.11.4/python-3.11.4-embed-amd64.zip
