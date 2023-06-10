@@ -1,4 +1,4 @@
-# dallify
+# Dallify
 
 ![1](https://github.com/AmirHosseinAsa/dallify/assets/92585902/6d05921e-e985-4ffe-b47c-912918a488ac)
 
