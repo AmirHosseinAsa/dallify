@@ -40,7 +40,9 @@ Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Releas
 Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Release\dallify.lib"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Release\msvcp140.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Release\screen_retriever_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Release\url_launcher_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Release\window_manager_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Release\vcruntime140_1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\Users\Amirhossein\StudioProjects\dallify\build\windows\runner\Release\python\*"; DestDir: "{app}\python"; Flags: ignoreversion recursesubdirs createallsubdirs

@@ -17,6 +17,7 @@ class RecordShowWidget extends StatefulWidget {
 
 class _RecordShowWidgetState extends State<RecordShowWidget> {
   bool _isLoading = false;
+  bool hasError = false;
 
   Future<void> _fetchResult() async {
     context
@@ -28,25 +29,25 @@ class _RecordShowWidgetState extends State<RecordShowWidget> {
     });
     try {
       widget.generateImageRecord.urls =
-          await fetchRecordResult(widget.generateImageRecord.prompt);
+          await fetchRecordResult(context, widget.generateImageRecord.prompt);
     } catch (e) {
       print(e);
       setState(() {
+        // TO DO REMOVE THIS INSTANCE
         hasError = true;
-        widget.generateImageRecord.delete();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: Your prompt has been blocked'),
-          ),
-        );
+        context
+            .read<GeneratedImageRecordsDatabase>()
+            .remove(widget.generateImageRecord);
       });
     } finally {
       setState(() {
         _isLoading = false;
         canGenerate = true;
-        context
-            .read<GeneratedImageRecordsDatabase>()
-            .updateUrls(widget.generateImageRecord);
+        if (!hasError) {
+          context
+              .read<GeneratedImageRecordsDatabase>()
+              .updateUrls(widget.generateImageRecord);
+        }
         GenerateButtonWidget.valueNotifier.value = true;
       });
     }
@@ -58,95 +59,87 @@ class _RecordShowWidgetState extends State<RecordShowWidget> {
     super.initState();
   }
 
-  bool hasError = false;
   @override
   Widget build(BuildContext context) {
     var loopLenth =
         _isLoading ? 4 : widget.generateImageRecord.urls?.length ?? 0;
     loopLenth = loopLenth > 4 ? 4 : loopLenth;
 
-    return Visibility(
-      visible: !hasError,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Text(
-                    widget.generateImageRecord.prompt,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                  ),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text(
+                  widget.generateImageRecord.prompt,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
                 ),
-                Visibility(
-                  visible: !_isLoading,
-                  child: IconButton(
-                    onPressed: () async {
-                      context
-                          .read<GeneratedImageRecordsDatabase>()
-                          .remove(widget.generateImageRecord);
-                    },
-                    icon: Icon(
-                      Icons.remove_circle_outline_sharp,
-                      color: Colors.red,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            GridView.builder(
-              physics: ClampingScrollPhysics(),
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: MediaQuery.of(context).size.width <
-                        MediaQuery.of(context).size.height
-                    ? 2
-                    : 4,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
               ),
-              itemCount: loopLenth,
-              itemBuilder: (context, index) {
-                return _isLoading
-                    ? Container(
-                        padding: EdgeInsets.all(50),
-                        child: spinkitPulse,
-                      )
-                    : !hasError
-                        ? Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: FadeInImage.assetNetwork(
-                                  placeholder: 'assets/loading.gif',
-                                  fit: BoxFit.fitHeight,
-                                  alignment: Alignment.center,
-                                  image:
-                                      widget.generateImageRecord.urls![index],
-                                ),
-                              ),
-                              Positioned(
-                                  bottom: 0,
-                                  left: -13,
-                                  child: SaveImageButton(
-                                      url: widget
-                                          .generateImageRecord.urls![index])),
-                            ],
-                          )
-                        : SizedBox();
-              },
+              Visibility(
+                visible: !_isLoading,
+                child: IconButton(
+                  onPressed: () async {
+                    context
+                        .read<GeneratedImageRecordsDatabase>()
+                        .remove(widget.generateImageRecord);
+                  },
+                  icon: Icon(
+                    Icons.remove_circle_outline_sharp,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          GridView.builder(
+            physics: ClampingScrollPhysics(),
+            shrinkWrap: true,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.of(context).size.width <
+                      MediaQuery.of(context).size.height
+                  ? 2
+                  : 4,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
             ),
-          ],
-        ),
+            itemCount: loopLenth,
+            itemBuilder: (context, index) {
+              return _isLoading
+                  ? Container(
+                      padding: EdgeInsets.all(50),
+                      child: spinkitPulse,
+                    )
+                  : Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: FadeInImage.assetNetwork(
+                            placeholder: 'assets/loading.gif',
+                            fit: BoxFit.fitHeight,
+                            alignment: Alignment.center,
+                            image: widget.generateImageRecord.urls![index],
+                          ),
+                        ),
+                        Positioned(
+                            bottom: 0,
+                            left: -13,
+                            child: SaveImageButton(
+                                url: widget.generateImageRecord.urls![index])),
+                      ],
+                    );
+            },
+          ),
+        ],
       ),
     );
   }

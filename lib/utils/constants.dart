@@ -36,3 +36,47 @@ Gradient darkenGradientTheme = LinearGradient(colors: [
   Color.fromARGB(255, 0, 66, 110),
   Color.fromARGB(255, 0, 108, 180),
 ]);
+
+showAlertDialog(
+    BuildContext context, VoidCallback yes, VoidCallback no, String text) {
+  Widget yesButton = TextButton(
+    style: ButtonStyle(
+        backgroundColor:
+            MaterialStateProperty.all(const Color.fromARGB(255, 163, 44, 35))),
+    child: Text(
+      "Yes",
+      style: TextStyle(color: Colors.white),
+    ),
+    onPressed: yes,
+  );
+  Widget noButton = TextButton(
+    style: ButtonStyle(
+        backgroundColor:
+            MaterialStateProperty.all(Color.fromARGB(255, 146, 139, 139))),
+    child: Text(
+      "No",
+      style: TextStyle(color: Colors.white),
+    ),
+    onPressed: no,
+  );
+  AlertDialog alert = AlertDialog(
+    title: Text("$text"),
+    alignment: Alignment.center,
+    actions: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          yesButton,
+          noButton,
+        ],
+      )
+    ],
+  );
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}

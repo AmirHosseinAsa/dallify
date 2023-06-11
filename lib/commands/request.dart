@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dallify/utils/constants.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:process_run/cmd_run.dart';
@@ -9,28 +10,55 @@ Future getData(url) async {
   return response.body;
 }
 
-Future<List<String>> fetchRecordResult(String prompt) async {
+Future<List<String>> fetchRecordResult(
+    BuildContext context, String prompt) async {
   final response = await http.post(
     Uri.parse('http://127.0.0.1:$portServ'),
     headers: {'prompt': prompt},
   );
-  if (response.statusCode == 200) {
-    try {
-      List<dynamic> jsonList = jsonDecode(response.body);
-      List<String> stringList =
-          jsonList.map((item) => item.toString()).toList();
-      return stringList;
-    } catch (e) {
-      return [];
-    }
-  } else {
-    throw Exception('Failed to fetch data from API');
+
+  switch (response.statusCode) {
+    case 200:
+      try {
+        List<dynamic> jsonList = jsonDecode(response.body);
+        List<String> stringList =
+            jsonList.map((item) => item.toString()).toList();
+        return stringList;
+      } catch (e) {
+        return [];
+      }
+    case 403:
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: Your prompt has been blocked'),
+        ),
+      );
+      throw Exception('Error: Your prompt has been blocked');
+
+    case 401:
+      await shutdownServer();
+      await startServer();
+      await Future.delayed(Duration(milliseconds: 1500));
+      return fetchRecordResult(context, prompt);
+
+    case 500:
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: Try again'),
+        ),
+      );
+      await shutdownServer();
+      await startServer();
+      throw Exception('Error: Try again');
+
+    default:
+      throw Exception('Failed to fetch data from API');
   }
 }
 
 Future<void> shutdownServer() async {
   try {
-        await http.head(Uri.parse('http://127.0.0.1:$portServ/shutdown'));
+    await http.head(Uri.parse('http://127.0.0.1:$portServ/shutdown'));
   } catch (e) {
     print(e);
   }

@@ -6,9 +6,11 @@ import 'package:dallify/commands/request.dart';
 import 'package:dallify/models/generated_image_records_database.dart';
 import 'package:dallify/setup_hive.dart';
 import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
 
 void main() async {
   await setupHive();
+  await WindowManager.instance.ensureInitialized();
   await configureServer();
   runApp(
     MultiProvider(
@@ -36,7 +38,6 @@ Future<void> configureServer() async {
     await startServer();
   } else {
     await shutdownServer();
-    await Future.delayed(Duration(milliseconds: 1500));
     await startServer();
   }
 }

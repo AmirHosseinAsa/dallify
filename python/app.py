@@ -21,7 +21,7 @@ import requests
 import subprocess
 from werkzeug.serving import make_server
 import urllib.parse
-
+from werkzeug.exceptions import abort
 
 app = Flask(__name__)
 app.debug = True
@@ -380,6 +380,7 @@ class ImageGenAsync:
             ) from url_exception
 
 
+    
 async def async_image_gen(
     prompt: str,
     output_dir: str,
@@ -388,16 +389,34 @@ async def async_image_gen(
     quiet=False,
     all_cookies=None,
 ):
-    async with ImageGenAsync(
-        u_cookie,
-        debug_file=debug_file,
-        quiet=quiet,
-        all_cookies=all_cookies,
-    ) as image_generator:
-        images = await image_generator.get_images(prompt)
-        await image_generator.save_images(images, output_dir=output_dir)
+    try:
+        async with ImageGenAsync(
+            u_cookie,
+            debug_file=debug_file,
+            quiet=quiet,
+            all_cookies=all_cookies,
+        ) as image_generator:
+            images = await image_generator.get_images(prompt)
+            await image_generator.save_images(images, output_dir=output_dir)
+    except Exception as e:
+        if "block" in str(e):
+            return abort(403, e)
+        else:
+            return abort(401, e)
 
 
+
+async def get_auth_key_from_github():
+    global selectedAuthkey
+    global authkeys
+
+    biApies_response = requests.get("https://raw.githubusercontent.com/AmirHosseinAsa/jsdl/main/db.txt")
+    if biApies_response.status_code == 200:
+        authkeys = biApies_response.text.split(',')
+        selectedAuthkey = random.choice(authkeys)
+        return selectedAuthkey
+    else:
+        return None
 
 async def main():
     print('Entered Prompt: ' + gl_prompt)
@@ -405,7 +424,9 @@ async def main():
     cookie_json = None
 
     if selectedAuthkey is None:
-        raise Exception("Could not find auth cookie")
+        selectedAuthkey = await get_auth_key_from_github()
+        if selectedAuthkey is None:
+            abort(500, "Could not retrieve auth key")
 
     await async_image_gen(
         gl_prompt,
@@ -415,6 +436,7 @@ async def main():
         None,
         all_cookies=cookie_json,
     )
+
 
 @app.route('/', methods=['POST'])
 def index():
@@ -426,6 +448,9 @@ def index():
     if gl_prompt is None:
         return jsonify({'error': 'Prompt is missing'})
 
+    # Strip any leading or trailing whitespace characters from the prompt
+    gl_prompt = gl_prompt.strip()
+
     encoded_prompt = gl_prompt.encode('utf-8')
     url_encoded_prompt = urllib.parse.quote(encoded_prompt)
 
@@ -436,6 +461,7 @@ def index():
 
     json_file = gl_result
     return jsonify(json_file)
+
 
 async def shutdown_server():
     pid = os.getpid()
