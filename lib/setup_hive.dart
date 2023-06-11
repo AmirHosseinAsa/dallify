@@ -4,7 +4,7 @@ import 'package:dallify/models/generate_image_record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dallify/utils/constants.dart';
 
-Future<void> setup() async {
+Future<void> setupHive() async {
   final Directory _appDocDir = await getApplicationDocumentsDirectory();
   final Directory _appDocDirFolder =
       Directory(_appDocDir.path + '/' + AplicationName);

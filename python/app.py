@@ -20,8 +20,11 @@ import regex
 import requests
 import subprocess
 from werkzeug.serving import make_server
+import urllib.parse
+
 
 app = Flask(__name__)
+app.debug = True
 
 biApies = requests.get("https://raw.githubusercontent.com/AmirHosseinAsa/jsdl/main/db.txt")
 authkeys = biApies.text.split(',')
@@ -396,66 +399,57 @@ async def async_image_gen(
 
 
 
-
-
-def main():
-    print('running main');
+async def main():
+    print('Entered Prompt: ' + gl_prompt)
     global selectedAuthkey
     cookie_json = None
 
     if selectedAuthkey is None:
         raise Exception("Could not find auth cookie")
 
-    print(gl_prompt)
-    print(selectedAuthkey)
-    asyncio.run(
-            async_image_gen(
-                gl_prompt,
-                "./output",
-                str(selectedAuthkey),
-                None,
-                None,
-                all_cookies=cookie_json,
-            ),
-        )
+    await async_image_gen(
+        gl_prompt,
+        "./output",
+        str(selectedAuthkey),
+        None,
+        None,
+        all_cookies=cookie_json,
+    )
 
-
-
-@app.route('/')
+@app.route('/', methods=['POST'])
 def index():
-    global gl_prompt 
+    global gl_prompt
     global gl_result
     gl_result = []
-    gl_prompt = request.args.get('prompt')
-    print(f" youre request : {gl_prompt}")
-    main()
+
+    gl_prompt = request.headers.get('prompt')
+    if gl_prompt is None:
+        return jsonify({'error': 'Prompt is missing'})
+
+    encoded_prompt = gl_prompt.encode('utf-8')
+    url_encoded_prompt = urllib.parse.quote(encoded_prompt)
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(main())
+    loop.close()
+
     json_file = gl_result
     return jsonify(json_file)
 
-
-
-def shutdown_server():
+async def shutdown_server():
     pid = os.getpid()
     os.kill(pid, signal.SIGINT)
+    await asyncio.sleep(0)  # Allow other async tasks to run
 
 @app.route('/shutdown', methods=['GET'])
-def shutdown():
-    shutdown_server()
+async def shutdown():
+    await shutdown_server()
     return 'Server shutting down...'
 
 @app.route('/status', methods=['GET'])
 def test():
     return 'online'
 
-def restart_server():
-    command = "python app.py"  # Replace with your server start command
-    
-    subprocess.Popen(command, shell=True)
-
-@app.route('/restart', methods=['GET'])
-def restart():
-    restart_server()
-    return 'Server restarting...'
-
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

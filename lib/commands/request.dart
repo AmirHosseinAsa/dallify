@@ -10,8 +10,10 @@ Future getData(url) async {
 }
 
 Future<List<String>> fetchRecordResult(String prompt) async {
-  final response =
-      await http.get(Uri.parse('http://127.0.0.1:$portServ?prompt=' + prompt));
+  final response = await http.post(
+    Uri.parse('http://127.0.0.1:$portServ'),
+    headers: {'prompt': prompt},
+  );
   if (response.statusCode == 200) {
     try {
       List<dynamic> jsonList = jsonDecode(response.body);
@@ -28,7 +30,7 @@ Future<List<String>> fetchRecordResult(String prompt) async {
 
 Future<void> shutdownServer() async {
   try {
-    await http.get(Uri.parse('http://127.0.0.1:$portServ/shutdown'));
+        await http.head(Uri.parse('http://127.0.0.1:$portServ/shutdown'));
   } catch (e) {
     print(e);
   }
@@ -43,7 +45,6 @@ Future<bool> checkWebsiteStatus() async {
     return false;
   }
 }
-
 
 Future<void> startServer() async {
   try {

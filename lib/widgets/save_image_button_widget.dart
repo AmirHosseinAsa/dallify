@@ -35,7 +35,7 @@ class _SaveImageButtonState extends State<SaveImageButton> {
         shape: MaterialStateProperty.all(CircleBorder()),
         padding: MaterialStateProperty.all(EdgeInsets.all(12)),
         backgroundColor:
-            MaterialStateProperty.all(sub_button_color.withOpacity(0.80)),
+            MaterialStateProperty.all(sub_button_color.withOpacity(0.85)),
         overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
           if (states.contains(MaterialState.pressed)) return Colors.blue;
         }),
