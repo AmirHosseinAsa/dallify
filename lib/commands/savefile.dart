@@ -1,3 +1,4 @@
+import 'package:dallify/widgets/custom_scaffold_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:dallify/utils/constants.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
@@ -27,19 +28,13 @@ Future<bool> downloadAndSaveFile(BuildContext context, String url) async {
       runInShell: true,
     ));
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('File saved successfully in : ' + firstPath),
-      ),
-    );
+    CustomScaffoldMessageWidget.show(
+        context, 'The file was saved successfully in: ' + firstPath);
 
     return true;
   } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error while saving file'),
-      ),
-    );
+    CustomScaffoldMessageWidget.show(
+        context, 'An error occurred while saving the file');
     return false;
   }
 }

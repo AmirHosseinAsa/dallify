@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dallify/utils/constants.dart';
+import 'package:dallify/widgets/custom_scaffold_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -28,11 +29,8 @@ Future<List<String>> fetchRecordResult(
         return [];
       }
     case 403:
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: Your prompt has been blocked'),
-        ),
-      );
+      CustomScaffoldMessageWidget.show(
+          context, 'Error: Your prompt has been blocked');
       throw Exception('Error: Your prompt has been blocked');
 
     case 401:
@@ -52,6 +50,8 @@ Future<List<String>> fetchRecordResult(
       throw Exception('Error: Try again');
 
     default:
+      CustomScaffoldMessageWidget.show(context,
+          'Unknown error: Please refer to the "About" page for contact information to reach out to the developer for assistance.');
       throw Exception('Failed to fetch data from API');
   }
 }

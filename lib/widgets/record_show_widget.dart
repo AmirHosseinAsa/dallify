@@ -1,3 +1,4 @@
+import 'package:dallify/widgets/custom_scaffold_message_widget.dart';
 import 'package:dallify/widgets/save_image_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:dallify/utils/constants.dart';
@@ -42,7 +43,6 @@ class _RecordShowWidgetState extends State<RecordShowWidget> {
     } finally {
       setState(() {
         _isLoading = false;
-        canGenerate = true;
         if (!hasError) {
           context
               .read<GeneratedImageRecordsDatabase>()
@@ -86,9 +86,15 @@ class _RecordShowWidgetState extends State<RecordShowWidget> {
                 visible: !_isLoading,
                 child: IconButton(
                   onPressed: () async {
-                    context
-                        .read<GeneratedImageRecordsDatabase>()
-                        .remove(widget.generateImageRecord);
+                    if (ModalRoute.of(context)?.settings.name != '/' ||
+                         GenerateButtonWidget.valueNotifier.value) {
+                      context
+                          .read<GeneratedImageRecordsDatabase>()
+                          .remove(widget.generateImageRecord);
+                    } else {
+                      CustomScaffoldMessageWidget.show(context,
+                          'Please wait until the generation is finished');
+                    }
                   },
                   icon: Icon(
                     Icons.remove_circle_outline_sharp,

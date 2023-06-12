@@ -1,3 +1,4 @@
+import 'package:dallify/widgets/custom_scaffold_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:dallify/utils/constants.dart';
 import 'package:dallify/models/generate_image_record.dart';
@@ -17,14 +18,16 @@ class GenerateButtonWidget extends StatefulWidget {
 class _GenerateButtonWidgetState extends State<GenerateButtonWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-
-  @override
-  void initState() {
+  void initiateAnimation() {
     _controller = (AnimationController(
       vsync: this,
       duration: Duration(seconds: 10),
     )..repeat(reverse: false));
+  }
 
+  @override
+  void initState() {
+    initiateAnimation();
     super.initState();
   }
 
@@ -38,22 +41,17 @@ class _GenerateButtonWidgetState extends State<GenerateButtonWidget>
     if (ModalRoute.of(context)?.settings.name != '/') {
       Navigator.pushNamed(context, '/');
     }
-    if (textFiledGenerateValue != '' && canGenerate) {
-      if (GenerateButtonWidget.valueNotifier.value) {
-        textFiledGenerateValue = textFiledGenerateValue.trim();
-        textFiledGenerateValue = textFiledGenerateValue[0].toUpperCase() +
-            textFiledGenerateValue.substring(1);
-        context
-            .read<GeneratedImageRecordsDatabase>()
-            .add(GenerateImageRecord(prompt: textFiledGenerateValue));
-        GenerateButtonWidget.valueNotifier.value = false;
-      }
+    if (textFiledGenerateValue != '' &&
+        GenerateButtonWidget.valueNotifier.value) {
+      textFiledGenerateValue = textFiledGenerateValue.trim();
+      textFiledGenerateValue = textFiledGenerateValue[0].toUpperCase() +
+          textFiledGenerateValue.substring(1);
+      context
+          .read<GeneratedImageRecordsDatabase>()
+          .add(GenerateImageRecord(prompt: textFiledGenerateValue));
+      GenerateButtonWidget.valueNotifier.value = false;
     } else if (textFiledGenerateValue == '') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter youre prompt'),
-        ),
-      );
+      CustomScaffoldMessageWidget.show(context, 'Please enter youre prompt');
     }
   }
 

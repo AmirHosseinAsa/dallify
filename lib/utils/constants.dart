@@ -7,7 +7,6 @@ const Color background_sidebar = Color(0xff18181B);
 const Color backgroun_titlebar = Color.fromARGB(255, 20, 20, 20);
 const Color sub_button_color = Color.fromARGB(255, 0, 123, 180);
 
-bool canGenerate = true;
 String textFiledGenerateValue = '';
 
 final spinkitPulse = SpinKitPulse(
@@ -16,7 +15,7 @@ final spinkitPulse = SpinKitPulse(
 );
 const String version = 'v1.0.0';
 const String mailing =
-    'mailto:amirhossein.asa.official@gmail.com?subject=[Dallify Ai Image Generator: (Ver: $version)]';
+    'mailto:amirhossein.asa.official@gmail.com?subject=[Dallify: (Ver: $version)]';
 const String storeSearch =
     'https://www.microsoft.com/en-us/search/explore?q=Dollify+Best+Ai+Image+Creator';
 
