@@ -21,11 +21,17 @@ Future<bool> downloadAndSaveFile(BuildContext context, String url) async {
       await _appDownloadDirFolder.create(recursive: true);
     }
 
+    // await runCmd(ProcessCmd(
+    //   'python',
+    //   ['-m', 'save.py', '-U', url, '-P', firstPath],
+    //   workingDirectory: 'python',
+    //   runInShell: true,
+    // ));
+
     await runCmd(ProcessCmd(
-      'python',
-      ['-m', 'save.py', '-U', url, '-P', firstPath],
+      'python -m save.py -U $url -P $firstPath',
+      [],
       workingDirectory: 'python',
-      runInShell: true,
     ));
 
     CustomScaffoldMessageWidget.show(

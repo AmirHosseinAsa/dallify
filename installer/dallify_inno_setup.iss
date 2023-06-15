@@ -23,6 +23,7 @@ OutputBaseFilename=DallifySetup
 SetupIconFile=C:\Users\Amirhossein\StudioProjects\dallify\installer\icon.ico
 Compression=lzma
 SolidCompression=yes
+Uninstallable=no
 WizardStyle=modern
 
 [Languages]
